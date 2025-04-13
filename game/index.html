@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini Game Đặt Câu Hỏi</title>
+  <link rel="stylesheet" href="./css/main.css">
+</head>
+
+<audio id="correctSound" src="sounds/tieng_tinh_tinh-www_tiengdong_com.mp3" preload="auto"></audio>
+
+<body>
+  <div class="quiz-container">
+    <div id="quiz">
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+      <button onclick="submitAnswer()">Trả lời</button>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const questions = [
+  {
+    question: "1. Theo lời thề người học y có thể truyền nghề lại cho?",
+    options: ["Người thân có nhu cầu", "Người học trò có năng lực và đạo đức tốt", "Bất kỳ ai trả đủ học phí", "Người bệnh có yêu cầu"],
+    answer: 1
+  },
+  {
+    question: "2. trong lời thề Hippocrates thầy thuốc phải đối xử với thẩy của mình như thế nào?",
+    options: ["Như đối tác kinh doanh", "Như một người bình thường", "Như cha mẹ", "Như cấp dưới"],
+    answer: 2
+  },
+  {
+    question: "3. Theo tinh thần của lời thề thầy thuốc nên ưu tiên điều gì trong quá trình điều trị?",
+    options: ["Lợi ích kinh tế cá nhân", "Sự nổi tiếng của bản thân", "Lợi ích và sức khỏe của bệnh nhân", "Quy trình bệnh viện"],
+    answer: 2
+  },
+  {
+    question: "4. Điều nào sau đây không phù hợp với tinh thần của lời thề? ",
+    options: ["Luôn tôn trọng sự sống", "Giữ bí mật cho người bệnh", "Kê thuốc theo yêu cầu của bệnh nhân dù biết có hại", "Không thực hiện hành vi làm tổn hại đến bệnh nhân"],
+    answer: 2
+  },
+  {
+    question: "5. Ý nghĩa của lời thề Hippocrates trong giáo dục y khoa hiện nay là?",
+    options: [
+      "Chỉ mang tính nghi lễ tượng trưng",
+      "Là phần bắt buộc trong các môn lý luận chính trị",
+      "Không còn được áp dụng trong chương trình học",
+      "Nhắc nhở sinh viên về trách nhiệm và đạo đức nghề nghiệp"
+    ],
+    answer: 3
+  }
+];
+
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      document.getElementById("question").textContent = q.question;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+
+      q.options.forEach((opt, index) => {
+        optionsDiv.innerHTML += `
+          <label class="option">
+            <input type="radio" name="option" value="${index}"> ${opt}
+          </label>
+        `;
+      });
+    }
+
+    function submitAnswer() {
+        const selected = document.querySelector('input[name="option"]:checked');
+        const resultDiv = document.getElementById("result");
+      
+        if (!selected) {
+          alert("Vui lòng chọn một đáp án!");
+          return;
+        }
+      
+        const answer = parseInt(selected.value);
+        const correctAnswer = questions[currentQuestion].answer;
+      
+        // Kiểm tra đáp án
+        if (answer === correctAnswer) {
+          score++;
+          document.getElementById("correctSound").play(); // 🔊 Âm thanh đúng
+          resultDiv.innerHTML = `<span style="color: green;">✅ Chính xác!</span>`;
+        } else {
+          resultDiv.innerHTML = `<span style="color: red;">❌ Sai! Đáp án đúng là: <b>${questions[currentQuestion].options[correctAnswer]}</b></span>`;
+        }
+      
+        // Vô hiệu hóa lựa chọn sau khi trả lời
+        document.querySelectorAll('input[name="option"]').forEach(input => input.disabled = true);
+      
+        // Chờ 2 giây rồi chuyển câu
+        setTimeout(() => {
+          resultDiv.innerHTML = "";
+          currentQuestion++;
+      
+          if (currentQuestion < questions.length) {
+            loadQuestion();
+          } else {
+            showResult();
+          }
+        }, 2000);
+      }
+      
+      function showResult() {
+        document.getElementById("quiz").style.display = "none";
+      
+        const total = questions.length;
+        const percent = Math.round((score / total) * 100);
+      
+        let message = `🎉 Bạn đã trả lời đúng ${score}/${total} câu hỏi (${percent}%).<br>`;
+      
+        if (score === total) {
+          message += "🏆 Xuất sắc! Bạn giỏi quá!";
+        } else if (score >= total / 2) {
+          message += "👍 Khá tốt! Bạn có thể làm tốt hơn nữa!";
+        } else {
+          message += "💪 Đừng nản! Luyện thêm chút nữa nha!";
+        }
+      
+        document.getElementById("result").innerHTML = message;
+      }
+      
+
+    // Bắt đầu game
+    loadQuestion();
+  </script>
+
+</body>
+</html>
